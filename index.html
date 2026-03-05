@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book Appointment – MyUW</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c5050c;--red-dark:#a00409;--red-light:#fff0f0;
+  --green:#1eb85a;--green-light:#f0fbf4;
+  --gray:#9ca3af;--gray-light:#f3f4f6;--gray-dark:#4b5563;
+  --dark:#111827;--white:#ffffff;--border:#e5e7eb;
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.13);
+}
+body{font-family:'DM Sans',sans-serif;background:#f8f9fb;color:var(--dark);min-height:100vh}
+
+/* HEADER */
+header{background:var(--red);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(197,5,12,0.35)}
+.logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:.3px}
+.logo em{font-style:normal;opacity:.65;font-weight:600;font-size:15px;margin-left:6px}
+header nav a{color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:500;margin-left:22px;transition:color .2s}
+header nav a:hover{color:#fff}
+
+/* SUBHEADER */
+.subheader{background:#fff;border-bottom:3px solid var(--red);padding:16px 40px;display:flex;align-items:baseline;gap:14px}
+.subheader h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--dark)}
+.subheader p{font-size:13px;color:var(--gray-dark)}
+
+/* STEPPER */
+.stepper{background:#fff;border-bottom:1px solid var(--border);padding:18px 40px;display:flex;align-items:center}
+.step{display:flex;align-items:center;gap:10px;flex:1}
+.step-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gray);background:#fff;flex-shrink:0;transition:all .3s}
+.step-text{font-size:13px;font-weight:500;color:var(--gray);transition:color .3s}
+.step.active .step-circle{background:var(--red);border-color:var(--red);color:#fff}
+.step.active .step-text{color:var(--dark);font-weight:600}
+.step.done .step-circle{background:var(--green);border-color:var(--green);color:#fff}
+.step-connector{flex:1;height:2px;background:var(--border);margin:0 10px;transition:background .3s}
+.step-connector.done{background:var(--green)}
+
+/* CONTAINER */
+.container{max-width:980px;margin:36px auto;padding:0 28px}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARD */
+.card{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+
+/* ===== ADVISOR SEARCH ===== */
+.advisor-section{margin-bottom:28px}
+.advisor-section h2{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px;color:var(--dark)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--gray);pointer-events:none}
+#advisor-search{width:100%;padding:12px 14px 12px 42px;border:2px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--dark);outline:none;transition:border-color .2s;background:#fff}
+#advisor-search:focus{border-color:var(--red)}
+.dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);z-index:100;max-height:320px;overflow-y:auto;display:none}
+.dropdown.open{display:block;animation:rise .2s ease}
+.dept-group{}
+.dept-header{padding:8px 16px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);background:var(--gray-light);border-top:1px solid var(--border)}
+.dept-header:first-child{border-top:none}
+.advisor-option{padding:11px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background .15s}
+.advisor-option:hover{background:var(--gray-light)}
+.advisor-option.selected{background:var(--red-light)}
+.advisor-avatar{width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.advisor-info strong{display:block;font-size:14px;font-weight:600;color:var(--dark)}
+.advisor-info span{font-size:12px;color:var(--gray-dark)}
+.advisor-badge{margin-left:auto;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--gray-light);color:var(--gray-dark)}
+
+/* Selected advisor chip */
+.selected-advisor{display:none;align-items:center;gap:10px;margin-top:12px;padding:12px 16px;background:var(--red-light);border:1.5px solid rgba(197,5,12,.2);border-radius:10px}
+.selected-advisor.show{display:flex}
+.selected-advisor strong{font-size:14px;font-weight:600;color:var(--dark)}
+.selected-advisor span{font-size:12px;color:var(--gray-dark)}
+.sa-clear{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--gray);font-size:18px;line-height:1;padding:0 4px;transition:color .2s}
+.sa-clear:hover{color:var(--red)}
+
+/* ===== CALENDAR ===== */
+.cal-header{background:var(--dark);color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+.cal-header h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:.5px}
+.cal-nav{display:flex;gap:8px}
+.cal-btn{background:rgba(255,255,255,.12);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.cal-btn:hover{background:rgba(255,255,255,.25)}
+
+.cal-body{padding:20px 24px 24px}
+.day-labels{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px}
+.day-labels span{text-align:center;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-cell{border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:72px;position:relative;transition:transform .15s,box-shadow .15s}
+.cal-cell .day-num{font-size:13px;font-weight:600;line-height:1}
+.cal-cell .day-block{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:all .2s}
+.cal-cell .hol-label{font-size:8.5px;font-weight:600;color:var(--red);text-align:center;line-height:1.2;max-width:52px}
+
+/* Past / other month */
+.cal-cell.past{background:#f5f5f5;cursor:default}
+.cal-cell.past .day-num{color:#bbb}
+.cal-cell.past .day-block{background:#e0e0e0;color:#aaa}
+
+/* Unavailable */
+.cal-cell.unavail{background:#fff5f5;cursor:not-allowed}
+.cal-cell.unavail .day-num{color:var(--gray-dark)}
+.cal-cell.unavail .day-block{background:var(--red);color:#fff}
+
+/* Available */
+.cal-cell.avail{background:var(--green-light);cursor:pointer}
+.cal-cell.avail .day-num{color:var(--dark)}
+.cal-cell.avail .day-block{background:var(--green);color:#fff}
+.cal-cell.avail:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(30,184,90,.3)}
+
+/* Today */
+.cal-cell.today{background:#fff8f0}
+.cal-cell.today .day-block{background:#fff;border:2.5px solid var(--red);color:var(--red)}
+
+/* Selected */
+.cal-cell.sel{box-shadow:0 0 0 2.5px #0066cc!important;background:#e8f2fd!important}
+.cal-cell.sel .day-block{background:#0066cc!important;color:#fff!important;border:none!important}
+
+/* Legend */
+.cal-legend{display:flex;flex-wrap:wrap;gap:16px;padding:14px 24px;border-top:1px solid var(--border);background:#fafafa}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-dark)}
+.leg-box{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+
+/* ===== TIME SLOTS ===== */
+.time-page-header{margin-bottom:20px}
+.time-page-header h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:4px}
+.time-page-header p{font-size:14px;color:var(--gray-dark)}
+
+.time-range-bar{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:20px}
+.time-range-bar label{font-size:13px;font-weight:600;color:var(--gray-dark);white-space:nowrap}
+.time-range-bar select{border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--dark);background:#fff;cursor:pointer;outline:none}
+.time-range-bar select:focus{border-color:var(--red)}
+.time-range-bar .sep{color:var(--gray);font-weight:600}
+.range-note{margin-left:auto;font-size:12px;color:var(--gray)}
+
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.slot{background:#fff;border:2px solid var(--border);border-radius:10px;padding:18px 16px;cursor:pointer;transition:all .2s;text-align:center}
+.slot:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(197,5,12,.1)}
+.slot.sel{border-color:var(--red);background:var(--red-light)}
+.slot .s-time{font-size:17px;font-weight:700;color:var(--dark)}
+.slot .s-dur{font-size:12px;color:var(--gray-dark);margin-top:4px}
+.slot .s-spots{font-size:11px;font-weight:600;color:var(--green);margin-top:8px}
+.slot.full{opacity:.5;cursor:not-allowed;background:var(--gray-light)}
+.slot.full .s-spots{color:var(--gray)}
+.no-slots{text-align:center;padding:40px 20px;color:var(--gray-dark);font-size:15px}
+
+/* ===== CONFIRMATION ===== */
+.confirm-top{background:linear-gradient(135deg,var(--green) 0%,#16a449 100%);color:#fff;padding:36px 36px 28px;text-align:center}
+.check-ring{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px;border:2.5px solid rgba(255,255,255,.4)}
+.confirm-top h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700}
+.confirm-top p{opacity:.85;font-size:14px;margin-top:6px}
+
+.confirm-body{padding:28px 36px}
+.detail-table{width:100%;border-collapse:collapse;margin-bottom:20px}
+.detail-table tr{border-bottom:1px solid var(--border)}
+.detail-table tr:last-child{border-bottom:none}
+.detail-table td{padding:13px 0;font-size:15px;vertical-align:top}
+.detail-table td:first-child{color:var(--gray-dark);font-weight:500;width:140px}
+.detail-table td:last-child{font-weight:600;color:var(--dark)}
+.status-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-light);color:var(--green);font-size:13px;font-weight:700;padding:4px 12px;border-radius:20px;border:1.5px solid rgba(30,184,90,.25)}
+
+.ref-box{background:var(--gray-light);border-radius:10px;padding:14px 20px;text-align:center;border:1.5px dashed var(--border);margin-bottom:24px}
+.ref-box small{font-size:12px;color:var(--gray-dark);display:block;margin-bottom:4px}
+.ref-num{font-size:22px;font-weight:700;color:var(--red);letter-spacing:4px;font-family:'Playfair Display',serif}
+
+/* ===== BUTTONS ===== */
+.btn-row{display:flex;justify-content:flex-end;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:12px 26px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-primary:disabled{background:#ccc;cursor:not-allowed}
+.btn-secondary{background:#fff;color:var(--dark);border:2px solid var(--border)}
+.btn-secondary:hover{border-color:var(--dark)}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:hover{background:#16a449}
+.btn-cal{background:#fff;color:#0066cc;border:2px solid #0066cc}
+.btn-cal:hover{background:#e8f2fd}
+
+/* No advisor state */
+.no-advisor-msg{text-align:center;padding:48px 20px;color:var(--gray-dark)}
+.no-advisor-msg .icon{font-size:40px;margin-bottom:10px}
+.no-advisor-msg p{font-size:15px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MyUW <em>University of Wisconsin–Madison</em></div>
+  <nav><a href="#">Home</a><a href="#">Academics</a><a href="#">Support</a></nav>
+</header>
+
+<div class="subheader">
+  <h1>Book an Appointment</h1>
+  <p>Schedule a meeting with your academic advisor</p>
+</div>
+
+<div class="stepper">
+  <div class="step active" id="step1"><div class="step-circle" id="sc1">1</div><div class="step-text">Select Advisor &amp; Date</div></div>
+  <div class="step-connector" id="conn1"></div>
+  <div class="step" id="step2"><div class="step-circle" id="sc2">2</div><div class="step-text">Select Time</div></div>
+  <div class="step-connector" id="conn2"></div>
+  <div class="step" id="step3"><div class="step-circle" id="sc3">3</div><div class="step-text">Confirmation</div></div>
+</div>
+
+<div class="container">
+
+  <!-- ══ PAGE 1: ADVISOR + CALENDAR ══ -->
+  <div class="page active" id="page1">
+
+    <!-- Advisor Search -->
+    <div class="advisor-section">
+      <h2>Who do you need advising for?</h2>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="advisor-search" type="text" placeholder="Search by department or advisor name (e.g. Computer Science, Housing…)" autocomplete="off"/>
+        <div class="dropdown" id="advisor-dropdown"></div>
+      </div>
+      <div class="selected-advisor" id="selected-chip">
+        <div class="advisor-avatar" id="chip-avatar">?</div>
+        <div><strong id="chip-name">–</strong><span id="chip-dept">–</span></div>
+        <button class="sa-clear" onclick="clearAdvisor()" title="Change advisor">✕</button>
+      </div>
+    </div>
+
+    <!-- Calendar -->
+    <div class="card" id="cal-card">
+      <div id="cal-placeholder" class="no-advisor-msg">
+        <div class="icon">📅</div>
+        <p>Select an advisor above to view their available dates</p>
+      </div>
+      <div id="cal-content" style="display:none">
+        <div class="cal-header">
+          <div class="cal-nav"><button class="cal-btn" onclick="prevMonth()">‹</button></div>
+          <h2 id="cal-title">MARCH 2026</h2>
+          <div class="cal-nav"><button class="cal-btn" onclick="nextMonth()">›</button></div>
+        </div>
+        <div class="cal-body">
+          <div class="day-labels">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="cal-legend">
+          <div class="leg-item"><div class="leg-box" style="background:var(--green)"></div>Available</div>
+          <div class="leg-item"><div class="leg-box" style="background:var(--red)"></div>Unavailable</div>
+          <div class="leg-item"><div class="leg-box" style="background:#e0e0e0"></div>Past / Other Month</div>
+          <div class="leg-item"><div class="leg-box" style="background:#fff;border:2px solid var(--red)"></div>Today</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="window.history.back()">← Back to MyUW</button>
+      <button class="btn btn-primary" id="btn1" disabled onclick="goPage(2)">Select Time →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: TIME SLOTS ══ -->
+  <div class="page" id="page2">
+    <div class="time-page-header">
+      <h2 id="time-heading">Available Times</h2>
+      <p id="time-sub">Select a time slot for your appointment</p>
+    </div>
+
+    <div class="time-range-bar">
+      <label>Show times from</label>
+      <select id="from-time" onchange="filterSlots()">
+        <option value="7">7:00 AM</option>
+        <option value="8">8:00 AM</option>
+        <option value="9" selected>9:00 AM</option>
+        <option value="10">10:00 AM</option>
+        <option value="11">11:00 AM</option>
+        <option value="12">12:00 PM</option>
+      </select>
+      <span class="sep">—</span>
+      <label>to</label>
+      <select id="to-time" onchange="filterSlots()">
+        <option value="12">12:00 PM</option>
+        <option value="13">1:00 PM</option>
+        <option value="14">2:00 PM</option>
+        <option value="15">3:00 PM</option>
+        <option value="16" selected>4:00 PM</option>
+        <option value="17">5:00 PM</option>
+      </select>
+      <span class="range-note" id="range-note"></span>
+    </div>
+
+    <div class="slots-grid" id="slots-grid"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage(1)">← Change Date</button>
+      <button class="btn btn-primary" id="btn2" disabled onclick="goPage(3)">Confirm Booking →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: CONFIRMATION ══ -->
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="confirm-top">
+        <div class="check-ring">✓</div>
+        <h2>Appointment Confirmed!</h2>
+        <p>A confirmation email has been sent to your wisc.edu address</p>
+      </div>
+      <div class="confirm-body">
+        <table class="detail-table">
+          <tr><td>Advisor</td><td id="c-advisor">–</td></tr>
+          <tr><td>Department</td><td id="c-dept">–</td></tr>
+          <tr><td>Date</td><td id="c-date">–</td></tr>
+          <tr><td>Time</td><td id="c-time">–</td></tr>
+          <tr><td>Duration</td><td>30 minutes</td></tr>
+          <tr><td>Location</td><td id="c-loc">–</td></tr>
+          <tr><td>Status</td><td><span class="status-badge">✓ Confirmed</span></td></tr>
+        </table>
+        <div class="ref-box">
+          <small>Confirmation Number</small>
+          <div class="ref-num" id="c-ref">–</div>
+        </div>
+        <div class="btn-row" style="margin-top:0;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="goHome()">🏠 Return to MyUW</button>
+          <button class="btn btn-secondary" onclick="cancelAppt()">✕ Cancel Appointment</button>
+          <button class="btn btn-cal" onclick="addToCalendar()">📅 Add to Calendar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+const TODAY = new Date(2026, 2, 4); // March 4 2026 (simulate today)
+
+const ADVISORS = [
+  {
+    id:1, name:'Dr. Sarah Chen', dept:'Computer Science', avatar:'SC',
+    location:'CS Building, Room 1240', zoom:'zoom.us/j/cs-advising',
+    schedule:{ // month key "YYYY-M" → available day numbers
+      '2026-2':[5,6,10,12,13,17,19,20,24,26,27],
+      '2026-3':[2,3,7,9,10,14,16]
+    }
+  },
+  {
+    id:2, name:'Prof. James Miller', dept:'Computer Science', avatar:'JM',
+    location:'CS Building, Room 1310',  zoom:'zoom.us/j/miller-advising',
+    schedule:{
+      '2026-2':[3,4,6,11,13,18,20,25,27],
+      '2026-3':[1,4,5,8,11,15]
+    }
+  },
+  {
+    id:3, name:'Dr. Anika Patel', dept:'Data Science', avatar:'AP',
+    location:'Discovery Building, 4th Floor', zoom:'zoom.us/j/datasci-advising',
+    schedule:{
+      '2026-2':[4,5,9,11,12,16,18,23,25,26],
+      '2026-3':[3,6,10,13,17]
+    }
+  },
+  {
+    id:4, name:'Ms. Tara Williams', dept:'Data Science', avatar:'TW',
+    location:'Discovery Building, 4th Floor', zoom:'zoom.us/j/tara-advising',
+    schedule:{
+      '2026-2':[3,6,10,12,17,19,24,26],
+      '2026-3':[2,5,9,12,16,19]
+    }
+  },
+  {
+    id:5, name:'Mr. Kevin Park', dept:'Housing & Residential Life', avatar:'KP',
+    location:'Lakeshore Hall, Office 102', zoom:'zoom.us/j/housing-advising',
+    schedule:{
+      '2026-2':[4,5,11,12,18,19,25,26],
+      '2026-3':[4,5,11,12,18]
+    }
+  },
+  {
+    id:6, name:'Ms. Diana Ross', dept:'Housing & Residential Life', avatar:'DR',
+    location:'Lakeshore Hall, Office 105', zoom:'zoom.us/j/diana-advising',
+    schedule:{
+      '2026-2':[3,6,9,13,16,20,23,27],
+      '2026-3':[3,6,9,13,16]
+    }
+  },
+  {
+    id:7, name:'Dr. Michael Torres', dept:'Mathematics', avatar:'MT',
+    location:'Van Vleck Hall, Room 217', zoom:'zoom.us/j/math-advising',
+    schedule:{
+      '2026-2':[5,6,12,13,19,20,26,27],
+      '2026-3':[5,6,12,13,19]
+    }
+  },
+  {
+    id:8, name:'Prof. Lisa Wang', dept:'Biology', avatar:'LW',
+    location:'Birge Hall, Room 301', zoom:'zoom.us/j/bio-advising',
+    schedule:{
+      '2026-2':[4,5,10,11,17,18,24,25],
+      '2026-3':[3,4,10,11,17]
+    }
+  },
+  {
+    id:9, name:'Mr. Omar Hassan', dept:'Financial Aid', avatar:'OH',
+    location:'Bascom Hall, Room 140', zoom:'zoom.us/j/finaid-advising',
+    schedule:{
+      '2026-2':[3,4,5,6,10,11,12,13,17,18,19,20,24,25,26,27],
+      '2026-3':[2,3,4,5,6,9,10,11,12,13]
+    }
+  },
+  {
+    id:10, name:'Ms. Rachel Green', dept:'Career Services', avatar:'RG',
+    location:'333 East Campus Mall, Room 201', zoom:'zoom.us/j/career-advising',
+    schedule:{
+      '2026-2':[4,5,6,11,12,13,18,19,20,25,26,27],
+      '2026-3':[3,4,5,10,11,12,17,18,19]
+    }
+  }
+];
+
+const DEPT_ORDER = ['Computer Science','Data Science','Housing & Residential Life','Mathematics','Biology','Financial Aid','Career Services'];
+
+const TIME_SLOTS_BASE = [
+  {h:7,m:0,label:'7:00 AM',spots:2},
+  {h:7,m:30,label:'7:30 AM',spots:0},
+  {h:8,m:0,label:'8:00 AM',spots:3},
+  {h:8,m:30,label:'8:30 AM',spots:1},
+  {h:9,m:0,label:'9:00 AM',spots:4},
+  {h:9,m:30,label:'9:30 AM',spots:2},
+  {h:10,m:0,label:'10:00 AM',spots:0},
+  {h:10,m:30,label:'10:30 AM',spots:3},
+  {h:11,m:0,label:'11:00 AM',spots:1},
+  {h:11,m:30,label:'11:30 AM',spots:2},
+  {h:12,m:0,label:'12:00 PM',spots:0},
+  {h:12,m:30,label:'12:30 PM',spots:3},
+  {h:13,m:0,label:'1:00 PM',spots:2},
+  {h:13,m:30,label:'1:30 PM',spots:1},
+  {h:14,m:0,label:'2:00 PM',spots:4},
+  {h:14,m:30,label:'2:30 PM',spots:0},
+  {h:15,m:0,label:'3:00 PM',spots:2},
+  {h:15,m:30,label:'3:30 PM',spots:3},
+  {h:16,m:0,label:'4:00 PM',spots:1},
+  {h:16,m:30,label:'4:30 PM',spots:0},
+];
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const HOLIDAYS = {'2026-2-17':"St. Patrick's Day"};
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let selAdvisor = null;
+let selDate = null;   // {year, month, day}
+let selTime = null;   // label string
+let curYear = 2026, curMonth = 2;
+
+// ══════════════════════════════════════════════
+// ADVISOR SEARCH
+// ══════════════════════════════════════════════
+const searchEl = document.getElementById('advisor-search');
+const dropdownEl = document.getElementById('advisor-dropdown');
+
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value.toLowerCase().trim();
+  renderDropdown(q);
+});
+searchEl.addEventListener('focus', () => {
+  renderDropdown(searchEl.value.toLowerCase().trim());
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) dropdownEl.classList.remove('open');
+});
+
+function renderDropdown(q) {
+  const filtered = ADVISORS.filter(a =>
+    !q || a.name.toLowerCase().includes(q) || a.dept.toLowerCase().includes(q)
+  );
+  if (!filtered.length) { dropdownEl.innerHTML='<div style="padding:14px 16px;color:var(--gray);font-size:14px">No advisors found</div>'; dropdownEl.classList.add('open'); return; }
+
+  const byDept = {};
+  DEPT_ORDER.forEach(d => byDept[d] = []);
+  filtered.forEach(a => { if(byDept[a.dept]) byDept[a.dept].push(a); });
+
+  let html = '';
+  DEPT_ORDER.forEach(dept => {
+    const group = byDept[dept];
+    if (!group.length) return;
+    html += `<div class="dept-header">${dept}</div>`;
+    group.forEach(a => {
+      html += `<div class="advisor-option${selAdvisor?.id===a.id?' selected':''}" onclick="selectAdvisor(${a.id})">
+        <div class="advisor-avatar" style="background:${avatarColor(a.dept)}">${a.avatar}</div>
+        <div class="advisor-info"><strong>${a.name}</strong><span>${a.dept}</span></div>
+        <span class="advisor-badge">${a.dept}</span>
+      </div>`;
+    });
+  });
+  dropdownEl.innerHTML = html;
+  dropdownEl.classList.add('open');
+}
+
+function avatarColor(dept) {
+  const map = {'Computer Science':'#c5050c','Data Science':'#1e40af','Housing & Residential Life':'#065f46','Mathematics':'#7c3aed','Biology':'#0f766e','Financial Aid':'#b45309','Career Services':'#be185d'};
+  return map[dept] || '#374151';
+}
+
+function selectAdvisor(id) {
+  selAdvisor = ADVISORS.find(a => a.id === id);
+  searchEl.value = '';
+  dropdownEl.classList.remove('open');
+
+  // Show chip
+  document.getElementById('chip-avatar').textContent = selAdvisor.avatar;
+  document.getElementById('chip-avatar').style.background = avatarColor(selAdvisor.dept);
+  document.getElementById('chip-name').textContent = selAdvisor.name;
+  document.getElementById('chip-dept').textContent = selAdvisor.dept;
+  document.getElementById('selected-chip').classList.add('show');
+
+  // Show calendar
+  document.getElementById('cal-placeholder').style.display = 'none';
+  document.getElementById('cal-content').style.display = 'block';
+
+  selDate = null;
+  document.getElementById('btn1').disabled = true;
+  renderCalendar();
+}
+
+function clearAdvisor() {
+  selAdvisor = null; selDate = null;
+  document.getElementById('selected-chip').classList.remove('show');
+  document.getElementById('cal-placeholder').style.display = 'block';
+  document.getElementById('cal-content').style.display = 'none';
+  document.getElementById('btn1').disabled = true;
+}
+
+// ══════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════
+function renderCalendar() {
+  if (!selAdvisor) return;
+  const key = `${curYear}-${curMonth}`;
+  const avail = selAdvisor.schedule[key] || [];
+  const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+  const firstDow = new Date(curYear, curMonth, 1).getDay();
+  const prevDays = new Date(curYear, curMonth, 0).getDate();
+
+  document.getElementById('cal-title').textContent = `${MONTH_NAMES[curMonth].toUpperCase()} ${curYear}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  // Leading cells (prev month)
+  for (let i = 0; i < firstDow; i++) {
+    const d = prevDays - firstDow + i + 1;
+    grid.appendChild(makeCell(d, 'past', '–'));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = new Date(curYear, curMonth, d);
+    const isPast = cellDate < new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+    const isToday = cellDate.toDateString() === TODAY.toDateString();
+    const isAvail = avail.includes(d);
+    const holKey = `${curYear}-${curMonth}-${d}`;
+    const holiday = HOLIDAYS[holKey];
+    const dow = (firstDow + d - 1) % 7;
+    const isWeekend = dow === 0 || dow === 6;
+
+    let cls, icon;
+    if (isPast)         { cls='past';    icon='–'; }
+    else if (isToday)   { cls='today';   icon=d; }
+    else if (isAvail)   { cls='avail';   icon='✓'; }
+    else                { cls='unavail'; icon='✕'; }
+    if (isWeekend && !isAvail && !isToday) { cls='past'; icon='–'; }
+
+    const cell = makeCell(d, cls, icon, holiday);
+    if (cls === 'avail') {
+      cell.addEventListener('click', () => {
+        document.querySelectorAll('.cal-cell').forEach(c=>c.classList.remove('sel'));
+        cell.classList.add('sel');
+        cell.querySelector('.day-block').textContent = '✓';
+        selDate = {year:curYear, month:curMonth, day:d};
+        document.getElementById('btn1').disabled = false;
+      });
+    }
+    grid.appendChild(cell);
+  }
+
+  // Trailing cells
+  const total = firstDow + daysInMonth;
+  const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= trailing; i++) grid.appendChild(makeCell(i,'past','–'));
+}
+
+function makeCell(num, cls, icon, holiday) {
+  const el = document.createElement('div');
+  el.className = `cal-cell ${cls}`;
+  el.innerHTML = `<div class="day-num">${num}</div><div class="day-block">${icon}</div>${holiday?`<div class="hol-label">${holiday}</div>`:''}`;
+  return el;
+}
+
+function prevMonth() {
+  curMonth--; if(curMonth<0){curMonth=11;curYear--;}
+  selDate=null; document.getElementById('btn1').disabled=true;
+  renderCalendar();
+}
+function nextMonth() {
+  curMonth++; if(curMonth>11){curMonth=0;curYear++;}
+  selDate=null; document.getElementById('btn1').disabled=true;
+  renderCalendar();
+}
+
+// ══════════════════════════════════════════════
+// TIME SLOTS
+// ══════════════════════════════════════════════
+function renderTimes() {
+  const fromH = parseInt(document.getElementById('from-time').value);
+  const toH   = parseInt(document.getElementById('to-time').value);
+  const dn = `${MONTH_NAMES[selDate.month]} ${selDate.day}, ${selDate.year}`;
+  document.getElementById('time-heading').textContent = `Available Times – ${dn}`;
+  document.getElementById('time-sub').textContent = `Showing slots from ${fmtH(fromH)} to ${fmtH(toH)} for ${selAdvisor.name}`;
+
+  const slots = TIME_SLOTS_BASE.filter(s => s.h >= fromH && s.h < toH);
+  const grid = document.getElementById('slots-grid');
+  grid.innerHTML = '';
+  selTime = null;
+  document.getElementById('btn2').disabled = true;
+
+  document.getElementById('range-note').textContent = `${slots.length} slots shown`;
+
+  if (!slots.length) {
+    grid.innerHTML = '<div class="no-slots" style="grid-column:1/-1">No slots in this range. Try adjusting the time filter.</div>';
+    return;
+  }
+
+  slots.forEach(s => {
+    const full = s.spots === 0;
+    const el = document.createElement('div');
+    el.className = `slot${full?' full':''}`;
+    el.innerHTML = `<div class="s-time">${s.label}</div><div class="s-dur">30 min · Academic Advising</div><div class="s-spots">${full?'No spots left':`${s.spots} spot${s.spots!==1?'s':''} left`}</div>`;
+    if (!full) {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.slot').forEach(x=>x.classList.remove('sel'));
+        el.classList.add('sel');
+        selTime = s.label;
+        document.getElementById('btn2').disabled = false;
+      });
+    }
+    grid.appendChild(el);
+  });
+}
+
+function filterSlots() { renderTimes(); }
+
+function fmtH(h) {
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12 = h % 12 || 12;
+  return `${h12}:00 ${ampm}`;
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function goPage(n) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`page${n}`).classList.add('active');
+  setStep(n);
+  if (n===2) renderTimes();
+  if (n===3) fillConfirm();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const s = document.getElementById(`step${i}`);
+    const c = document.getElementById(`sc${i}`);
+    s.classList.remove('active','done');
+    if (i < n)       { s.classList.add('done');   c.innerHTML='✓'; }
+    else if (i===n)  { s.classList.add('active');  c.textContent=i; }
+    else             { c.textContent=i; }
+  });
+  [1,2].forEach(i => {
+    document.getElementById(`conn${i}`).classList.toggle('done', i < n);
+  });
+}
+
+function fillConfirm() {
+  const dn = `${MONTH_NAMES[selDate.month]} ${selDate.day}, ${selDate.year}`;
+  document.getElementById('c-advisor').textContent = selAdvisor.name;
+  document.getElementById('c-dept').textContent = selAdvisor.dept;
+  document.getElementById('c-date').textContent = dn;
+  document.getElementById('c-time').textContent = selTime;
+  document.getElementById('c-loc').innerHTML = `${selAdvisor.location}<br><small style="color:var(--gray-dark);font-weight:400">or via Zoom: ${selAdvisor.zoom}</small>`;
+  document.getElementById('c-ref').textContent = 'UW' + Math.floor(100000 + Math.random()*900000);
+}
+
+function goHome() { window.location.href = '#'; /* replace with actual MyUW URL */ }
+
+function cancelAppt() {
+  if (confirm('Are you sure you want to cancel this appointment?')) {
+    alert('Your appointment has been cancelled. You will receive a confirmation email.');
+    goPage(1);
+    clearAdvisor();
+    selDate = null; selTime = null;
+  }
+}
+
+function addToCalendar() {
+  const title = encodeURIComponent(`Advising Appointment – ${selAdvisor.name}`);
+  const loc   = encodeURIComponent(selAdvisor.location);
+  const d = selDate;
+  const [h, minPart] = selTime.replace(' AM','').replace(' PM','').split(':');
+  let hour = parseInt(h);
+  if (selTime.includes('PM') && hour !== 12) hour += 12;
+  const start = `${d.year}${String(d.month+1).padStart(2,'0')}${String(d.day).padStart(2,'0')}T${String(hour).padStart(2,'0')}${minPart||'00'}00`;
+  const endH = String(hour+0).padStart(2,'0'); // same hour, +30min
+  const end   = `${d.year}${String(d.month+1).padStart(2,'0')}${String(d.day).padStart(2,'0')}T${String(hour).padStart(2,'0')}3000`;
+  window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&location=${loc}`,'_blank');
+}
+</script>
+</body>
+</html>
