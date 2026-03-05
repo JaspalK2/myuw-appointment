@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student Job Center – MyUW</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c5050c;--red-dark:#a00409;--red-light:#fff0f0;
+  --gray:#9ca3af;--gray-light:#f3f4f6;--gray-dark:#4b5563;
+  --dark:#111827;--white:#ffffff;--border:#e5e7eb;
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+body{font-family:'DM Sans',sans-serif;background:#f8f9fb;color:var(--dark);min-height:100vh}
+
+header{background:var(--red);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(197,5,12,0.35)}
+.header-left{display:flex;align-items:center;gap:18px}
+.logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:.3px}
+.logo em{font-style:normal;opacity:.65;font-weight:600;font-size:15px;margin-left:6px}
+.myuw-home-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none}
+.myuw-home-btn:hover{background:rgba(255,255,255,.3)}
+.header-search{display:flex;align-items:center;gap:10px}
+.header-search input{padding:7px 14px;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;width:280px;outline:none}
+.header-avatar{width:36px;height:36px;border-radius:50%;background:#e8940a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;border:2px solid rgba(255,255,255,.4)}
+
+.content{max-width:720px;margin:0 auto;padding:60px 28px 80px;text-align:center}
+.content h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:48px;color:var(--dark)}
+
+.job-buttons{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.job-btn{padding:12px 28px;border:2px solid var(--border);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--dark);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.job-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-light);box-shadow:var(--shadow)}
+
+.all-jobs-wrap{margin-bottom:60px}
+.all-jobs-btn{padding:12px 36px;border:2px solid var(--dark);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--dark);cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.all-jobs-btn:hover{background:var(--dark);color:#fff}
+
+.contact{font-size:15px;color:var(--gray-dark);margin-top:40px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">MyUW <em>University of Wisconsin–Madison</em></div>
+    <a class="myuw-home-btn" href="https://www.figma.com/proto/bpcqPhSPKckikaMYHflw15/High-Fidelity-Prototype?node-id=1-1741&t=ymB48FjNZm0hCbBj-1">MyUW Home</a>
+  </div>
+  <div class="header-search">
+    <input type="text" placeholder="Search for apps by keyword"/>
+    <div class="header-avatar">A</div>
+  </div>
+</header>
+
+<div class="content">
+  <h1>Welcome to the Student Job Center!</h1>
+
+  <div class="job-buttons">
+    <a class="job-btn" href="https://studentjobs.wisc.edu/" target="_blank">UW-Madison Student Jobs</a>
+    <a class="job-btn" href="https://studentjobs.wisc.edu/local-jobs-2/" target="_blank">Local Student Jobs</a>
+    <a class="job-btn" href="https://studentjobs.wisc.edu/" target="_blank">Graduate Student Jobs</a>
+  </div>
+
+  <div class="all-jobs-wrap">
+    <a class="all-jobs-btn" href="https://studentjobs.wisc.edu/" target="_blank">All Jobs</a>
+  </div>
+
+  <div class="contact">Contact us: 608-xxx-xxxx</div>
+</div>
+
+</body>
+</html>
