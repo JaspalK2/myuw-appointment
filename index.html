@@ -298,6 +298,12 @@ header nav a:hover{color:#fff}
 
     <div class="slots-grid" id="slots-grid"></div>
 
+    <!-- Reason for visit -->
+    <div style="margin-top:20px;background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:18px 20px">
+      <label for="visit-reason" style="display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:8px">What would you like to discuss? <span style="font-weight:400;color:var(--gray);font-size:12px">(optional)</span></label>
+      <textarea id="visit-reason" rows="3" placeholder="e.g. Course registration questions, major declaration, graduation requirements..." style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--dark);resize:vertical;outline:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    </div>
+
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="goPage(1)">&#8592; Back to Calendar</button>
       <button class="btn btn-primary" id="btn2" disabled onclick="goPage(3)">Confirm Booking &#8594;</button>
@@ -319,6 +325,7 @@ header nav a:hover{color:#fff}
           <tr><td>Date</td><td id="c-date">–</td></tr>
           <tr><td>Time</td><td id="c-time">–</td></tr>
           <tr><td>Duration</td><td>30 minutes</td></tr>
+          <tr><td>Reason</td><td id="c-reason" style="font-style:italic;color:var(--gray-dark)">–</td></tr>
           <tr><td>Location</td><td id="c-loc">–</td></tr>
           <tr><td>Status</td><td><span class="status-badge">&#10003; Confirmed</span></td></tr>
         </table>
@@ -733,6 +740,8 @@ function fillConfirm() {
   document.getElementById('c-date').textContent = dn;
   // Show time as a range: "9:00 AM – 9:30 AM (30 min)"
   document.getElementById('c-time').textContent = selSlot.label + ' \u2013 ' + selSlot.endLabel;
+  var reason = document.getElementById('visit-reason').value.trim();
+  document.getElementById('c-reason').textContent = reason || 'Not specified';
   document.getElementById('c-loc').innerHTML = selAdvisor.location + '<br><small style="color:var(--gray-dark);font-weight:400">or via Zoom: ' + selAdvisor.zoom + '</small>';
   document.getElementById('c-ref').textContent = 'UW' + Math.floor(100000 + Math.random() * 900000);
 }
