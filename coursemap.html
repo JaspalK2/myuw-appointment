@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Course Map – MyUW</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c5050c;--red-dark:#a00409;--red-light:#fff0f0;
+  --green:#1eb85a;--green-light:#f0fbf4;
+  --blue:#0066cc;--blue-light:#e8f2fd;
+  --gray:#9ca3af;--gray-light:#f3f4f6;--gray-dark:#4b5563;
+  --dark:#111827;--white:#ffffff;--border:#e5e7eb;
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+body{font-family:'DM Sans',sans-serif;background:#f8f9fb;color:var(--dark);min-height:100vh}
+
+/* HEADER */
+header{background:var(--red);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(197,5,12,0.35)}
+.logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:.3px}
+.logo em{font-style:normal;opacity:.65;font-weight:600;font-size:15px;margin-left:6px}
+.header-search{display:flex;align-items:center;gap:10px}
+.header-search input{padding:7px 14px;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;width:280px;outline:none}
+.header-search input::placeholder{color:#aaa}
+.header-avatar{width:36px;height:36px;border-radius:50%;background:#e8940a;color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;border:2px solid rgba(255,255,255,.4)}
+.header-left{display:flex;align-items:center;gap:18px}
+.myuw-home-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-decoration:none}
+.myuw-home-btn:hover{background:rgba(255,255,255,.3)}
+
+/* CONTENT */
+.content{padding:24px 40px;max-width:1400px;margin:0 auto}
+.content h1{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:20px}
+
+/* DAY TABS */
+.day-tabs{display:flex;gap:0;margin-bottom:24px;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content}
+.day-tab{padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;border:none;border-right:1px solid var(--border);font-family:'DM Sans',sans-serif;color:var(--gray-dark);transition:all .2s}
+.day-tab:last-child{border-right:none}
+.day-tab:hover{background:var(--gray-light)}
+.day-tab.active{background:var(--dark);color:#fff}
+
+/* LAYOUT */
+.main-layout{display:grid;grid-template-columns:380px 1fr;gap:24px;min-height:550px}
+
+/* CLASS LIST */
+.class-panel{display:flex;flex-direction:column;gap:16px}
+.class-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:var(--shadow);border:1.5px solid var(--border);transition:border-color .2s}
+.class-card.highlighted{border-color:var(--blue);background:var(--blue-light)}
+.class-name{font-size:16px;font-weight:700;color:var(--dark);margin-bottom:4px}
+.class-time{font-size:14px;color:var(--gray-dark);margin-bottom:2px}
+.class-loc{font-size:13px;color:var(--gray);margin-bottom:12px}
+.map-to-class-btn{padding:8px 18px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--gray-dark);cursor:pointer;transition:all .2s}
+.map-to-class-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.map-to-class-btn.active{border-color:var(--blue);color:#fff;background:var(--blue)}
+
+.map-full-day-btn{padding:10px 22px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--gray-dark);cursor:pointer;transition:all .2s;width:fit-content}
+.map-full-day-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.map-full-day-btn.active{border-color:var(--blue);color:#fff;background:var(--blue)}
+
+.no-classes{text-align:center;padding:40px 20px;color:var(--gray);font-size:15px}
+
+/* MAP */
+.map-panel{display:flex;flex-direction:column;gap:12px}
+#map{flex:1;min-height:450px;border-radius:12px;box-shadow:var(--shadow);border:1.5px solid var(--border);z-index:1}
+
+/* MAP CONTROLS BAR */
+.map-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+.map-controls label{font-size:12px;font-weight:600;color:var(--gray-dark);white-space:nowrap}
+.map-controls select,.map-controls input[type="time"]{border:1.5px solid var(--border);border-radius:6px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--dark);background:#fff;cursor:pointer;outline:none}
+.map-controls select:focus,.map-controls input[type="time"]:focus{border-color:var(--blue)}
+.ctrl-sep{width:1px;height:28px;background:var(--border);margin:0 4px}
+
+.ctrl-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--gray-dark);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.ctrl-btn:hover{border-color:var(--dark);color:var(--dark)}
+.ctrl-btn.disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.ctrl-btn.enabled{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.ctrl-btn.enabled:hover{background:var(--blue);color:#fff}
+
+/* EXPORT BAR */
+.export-bar{display:flex;align-items:center;gap:10px;background:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+.export-bar span{font-size:13px;font-weight:600;color:var(--gray-dark)}
+.export-btn{padding:8px 16px;border:1.5px solid var(--border);border-radius:6px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.export-btn.disabled{opacity:.4;cursor:not-allowed;color:var(--gray)}
+.export-btn.google.enabled{border-color:#4285F4;color:#4285F4;background:#e8f0fe}
+.export-btn.google.enabled:hover{background:#4285F4;color:#fff}
+.export-btn.apple.enabled{border-color:#333;color:#333;background:#f5f5f5}
+.export-btn.apple.enabled:hover{background:#333;color:#fff}
+
+/* ROUTE INFO */
+.route-info{background:#fff;padding:12px 16px;border-radius:10px;box-shadow:var(--shadow);border:1.5px solid var(--border);display:none;font-size:13px;color:var(--gray-dark)}
+.route-info.show{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.route-stat{display:flex;align-items:center;gap:6px}
+.route-stat strong{color:var(--dark);font-size:15px}
+.route-stat .label{font-size:11px;color:var(--gray)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">MyUW <em>University of Wisconsin–Madison</em></div>
+    <a class="myuw-home-btn" href="https://www.figma.com/proto/bpcqPhSPKckikaMYHflw15/High-Fidelity-Prototype?node-id=1-1741&t=ymB48FjNZm0hCbBj-1">MyUW Home</a>
+  </div>
+  <div class="header-search">
+    <input type="text" placeholder="Search for apps by keyword"/>
+    <div class="header-avatar">A</div>
+  </div>
+</header>
+
+<div class="content">
+  <h1>Class Schedule</h1>
+
+  <div class="day-tabs" id="day-tabs"></div>
+
+  <div class="main-layout">
+    <div class="class-panel" id="class-panel"></div>
+    <div class="map-panel">
+      <div class="map-controls">
+        <label>Travel mode:</label>
+        <select id="travel-mode" onchange="refreshRoute()">
+          <option value="foot">Walking</option>
+          <option value="bike">Biking</option>
+          <option value="car">Driving</option>
+        </select>
+        <div class="ctrl-sep"></div>
+        <label>Leave at:</label>
+        <input type="time" id="leave-at" onchange="calcTiming()"/>
+        <div class="ctrl-sep"></div>
+        <label>Arrive by:</label>
+        <input type="time" id="arrive-by" onchange="calcArriveBy()"/>
+        <div class="ctrl-sep"></div>
+        <button class="ctrl-btn" onclick="refreshRoute()" title="Refresh route">&#8635; Refresh</button>
+      </div>
+
+      <div class="route-info" id="route-info">
+        <div class="route-stat"><strong id="ri-dist">–</strong><span class="label">distance</span></div>
+        <div class="route-stat"><strong id="ri-time">–</strong><span class="label">walk time</span></div>
+        <div class="route-stat"><strong id="ri-eta">–</strong><span class="label">ETA</span></div>
+        <div class="route-stat"><strong id="ri-leave">–</strong><span class="label">leave by</span></div>
+      </div>
+
+      <div id="map"></div>
+
+      <div class="export-bar">
+        <span>Export route:</span>
+        <button class="export-btn google disabled" id="btn-google" onclick="exportGoogle()">&#127760; Google Maps</button>
+        <button class="export-btn apple disabled" id="btn-apple" onclick="exportApple()">&#127758; Apple Maps</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// COURSE DATA — UW-Madison buildings with real coordinates
+// ══════════════════════════════════════════════
+var BUILDINGS = {
+  'Chemistry Building':       { lat: 43.07534, lng: -89.40820, addr: '1101 University Ave' },
+  'Mosse Humanities Building':{ lat: 43.07485, lng: -89.40050, addr: '455 N Park St' },
+  'Computer Sciences':        { lat: 43.07162, lng: -89.40670, addr: '1210 W Dayton St' },
+  'Van Vleck Hall':           { lat: 43.07440, lng: -89.40400, addr: '480 Lincoln Dr' },
+  'Discovery Building':       { lat: 43.07280, lng: -89.40850, addr: '330 N Orchard St' },
+  'Birge Hall':               { lat: 43.07610, lng: -89.40130, addr: '430 Lincoln Dr' },
+  'Bascom Hall':              { lat: 43.07530, lng: -89.40500, addr: '500 Lincoln Dr' },
+  'Education Building':       { lat: 43.07460, lng: -89.39930, addr: '1000 Bascom Mall' },
+  'Social Science':           { lat: 43.07440, lng: -89.39960, addr: '1180 Observatory Dr' },
+  'Sterling Hall':            { lat: 43.07590, lng: -89.40710, addr: '475 N Charter St' },
+  'Ingraham Hall':            { lat: 43.07590, lng: -89.40290, addr: '1155 Observatory Dr' }
+};
+
+var SCHEDULE = {
+  Monday: [
+    { name: 'Biology 101', time: '12:25pm – 1:15pm', location: 'Chemistry Building', startH:12,startM:25,endH:13,endM:15 },
+    { name: 'French 101',  time: '3:40pm – 4:45pm',  location: 'Mosse Humanities Building', startH:15,startM:40,endH:16,endM:45 }
+  ],
+  Tuesday: [
+    { name: 'CS 540 – Intro to AI', time: '9:30am – 10:45am', location: 'Computer Sciences', startH:9,startM:30,endH:10,endM:45 },
+    { name: 'Math 234',             time: '1:20pm – 2:10pm',  location: 'Van Vleck Hall', startH:13,startM:20,endH:14,endM:10 },
+    { name: 'Data Science 301',     time: '4:00pm – 5:15pm',  location: 'Discovery Building', startH:16,startM:0,endH:17,endM:15 }
+  ],
+  Wednesday: [
+    { name: 'Biology 101', time: '12:25pm – 1:15pm', location: 'Chemistry Building', startH:12,startM:25,endH:13,endM:15 },
+    { name: 'French 101',  time: '3:40pm – 4:45pm',  location: 'Mosse Humanities Building', startH:15,startM:40,endH:16,endM:45 }
+  ],
+  Thursday: [
+    { name: 'CS 540 – Intro to AI', time: '9:30am – 10:45am', location: 'Computer Sciences', startH:9,startM:30,endH:10,endM:45 },
+    { name: 'Math 234',             time: '1:20pm – 2:10pm',  location: 'Van Vleck Hall', startH:13,startM:20,endH:14,endM:10 },
+    { name: 'Econ 101',             time: '3:30pm – 4:45pm',  location: 'Social Science', startH:15,startM:30,endH:16,endM:45 }
+  ],
+  Friday: [
+    { name: 'Data Science 301', time: '11:00am – 12:15pm', location: 'Discovery Building', startH:11,startM:0,endH:12,endM:15 }
+  ]
+};
+
+var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+var currentDay = 'Monday';
+var activeRoute = null;        // 'single-0', 'single-1', 'fullday'
+var activeClassIdx = null;     // index of class being routed to
+var routeCoords = [];          // array of [lat,lng] for current route
+var routeWaypoints = [];       // [{lat,lng,name}] for export
+var routeLayer = null;
+var markerLayers = [];
+var routeDistKm = 0;
+var routeDurMin = 0;
+
+// ══════════════════════════════════════════════
+// MAP INIT
+// ══════════════════════════════════════════════
+var map = L.map('map').setView([43.0740, -89.4050], 15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 19
+}).addTo(map);
+
+// Custom marker icons
+function makeIcon(color) {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: '<div style="width:28px;height:28px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;font-family:DM Sans,sans-serif"></div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16]
+  });
+}
+function makeNumberIcon(num, color) {
+  return L.divIcon({
+    className: 'custom-marker',
+    html: '<div style="width:32px;height:32px;border-radius:50%;background:' + color + ';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;font-family:DM Sans,sans-serif">' + num + '</div>',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -18]
+  });
+}
+
+// ══════════════════════════════════════════════
+// RENDER UI
+// ══════════════════════════════════════════════
+function renderDayTabs() {
+  var html = '';
+  DAYS.forEach(function(day) {
+    html += '<button class="day-tab' + (day === currentDay ? ' active' : '') + '" onclick="switchDay(\'' + day + '\')">' + day + '</button>';
+  });
+  document.getElementById('day-tabs').innerHTML = html;
+}
+
+function renderClasses() {
+  var classes = SCHEDULE[currentDay] || [];
+  var panel = document.getElementById('class-panel');
+
+  if (!classes.length) {
+    panel.innerHTML = '<div class="no-classes">No classes scheduled for ' + currentDay + '</div>';
+    return;
+  }
+
+  var html = '';
+  classes.forEach(function(c, i) {
+    var highlighted = (activeRoute === 'single-' + i) ? ' highlighted' : '';
+    html += '<div class="class-card' + highlighted + '">' +
+      '<div class="class-name">Class ' + (i + 1) + ' – ' + c.name + '</div>' +
+      '<div class="class-time">' + c.time + '</div>' +
+      '<div class="class-loc">Location: ' + c.location + '</div>' +
+      '<button class="map-to-class-btn' + (activeRoute === 'single-' + i ? ' active' : '') + '" onclick="mapToClass(' + i + ')">Map to class</button>' +
+    '</div>';
+  });
+
+  html += '<button class="map-full-day-btn' + (activeRoute === 'fullday' ? ' active' : '') + '" onclick="mapFullDay()">Map Full Day</button>';
+
+  panel.innerHTML = html;
+}
+
+function switchDay(day) {
+  currentDay = day;
+  activeRoute = null;
+  activeClassIdx = null;
+  clearRoute();
+  renderDayTabs();
+  renderClasses();
+  updateExportButtons();
+  hideRouteInfo();
+  showAllMarkers();
+}
+
+// ══════════════════════════════════════════════
+// MARKERS
+// ══════════════════════════════════════════════
+function clearMarkers() {
+  markerLayers.forEach(function(m) { map.removeLayer(m); });
+  markerLayers = [];
+}
+
+function showAllMarkers() {
+  clearMarkers();
+  var classes = SCHEDULE[currentDay] || [];
+  var bounds = [];
+  classes.forEach(function(c, i) {
+    var b = BUILDINGS[c.location];
+    if (!b) return;
+    var m = L.marker([b.lat, b.lng], { icon: makeNumberIcon(i + 1, '#c5050c') })
+      .addTo(map)
+      .bindPopup('<strong>' + c.name + '</strong><br>' + c.time + '<br>' + c.location);
+    markerLayers.push(m);
+    bounds.push([b.lat, b.lng]);
+  });
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+  }
+}
+
+// ══════════════════════════════════════════════
+// ROUTING via OSRM (free, no API key needed)
+// ══════════════════════════════════════════════
+function clearRoute() {
+  if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+  routeCoords = [];
+  routeWaypoints = [];
+  routeDistKm = 0;
+  routeDurMin = 0;
+}
+
+function fetchRoute(waypoints, callback) {
+  // waypoints = [{lat, lng, name}, ...]
+  var profile = document.getElementById('travel-mode').value;
+  var osrmProfile = profile === 'bike' ? 'bike' : profile === 'car' ? 'car' : 'foot';
+  var coords = waypoints.map(function(w) { return w.lng + ',' + w.lat; }).join(';');
+  var url = 'https://router.project-osrm.org/route/v1/' + osrmProfile + '/' + coords + '?overview=full&geometries=geojson&steps=true';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.routes && data.routes.length) {
+        callback(data.routes[0]);
+      } else {
+        // Fallback: draw straight lines
+        callback(null);
+      }
+    })
+    .catch(function() { callback(null); });
+}
+
+function drawRoute(routeData, waypoints, colors) {
+  clearRoute();
+  clearMarkers();
+  routeWaypoints = waypoints;
+
+  if (routeData && routeData.geometry) {
+    var coords = routeData.geometry.coordinates.map(function(c) { return [c[1], c[0]]; });
+    routeLayer = L.polyline(coords, { color: '#1a56db', weight: 5, opacity: 0.8, dashArray: '10 6' }).addTo(map);
+    routeCoords = coords;
+    routeDistKm = routeData.distance / 1000;
+    routeDurMin = routeData.duration / 60;
+  } else {
+    // Straight line fallback
+    var pts = waypoints.map(function(w) { return [w.lat, w.lng]; });
+    routeLayer = L.polyline(pts, { color: '#1a56db', weight: 4, opacity: 0.7, dashArray: '8 5' }).addTo(map);
+    routeCoords = pts;
+    routeDistKm = 0;
+    routeDurMin = 0;
+  }
+
+  // Add markers
+  waypoints.forEach(function(w, i) {
+    var color = i === 0 ? '#1eb85a' : (i === waypoints.length - 1 ? '#c5050c' : '#1a56db');
+    var m = L.marker([w.lat, w.lng], { icon: makeNumberIcon(i + 1, color) })
+      .addTo(map)
+      .bindPopup('<strong>' + w.name + '</strong>');
+    markerLayers.push(m);
+  });
+
+  // Fit bounds
+  var bounds = waypoints.map(function(w) { return [w.lat, w.lng]; });
+  map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
+
+  showRouteInfo();
+}
+
+// ══════════════════════════════════════════════
+// MAP TO CLASS / FULL DAY
+// ══════════════════════════════════════════════
+function mapToClass(idx) {
+  var classes = SCHEDULE[currentDay];
+  var c = classes[idx];
+  var b = BUILDINGS[c.location];
+  if (!b) return;
+
+  activeRoute = 'single-' + idx;
+  activeClassIdx = idx;
+  renderClasses();
+  updateExportButtons();
+
+  // Route from previous class (or campus center) to this class
+  var from;
+  if (idx > 0) {
+    var prevLoc = classes[idx - 1].location;
+    var pb = BUILDINGS[prevLoc];
+    from = { lat: pb.lat, lng: pb.lng, name: prevLoc };
+  } else {
+    // Default start: Bascom Hall (campus center)
+    from = { lat: 43.07530, lng: -89.40500, name: 'Campus Center (Bascom)' };
+  }
+  var to = { lat: b.lat, lng: b.lng, name: c.location };
+  var waypoints = [from, to];
+
+  fetchRoute(waypoints, function(routeData) {
+    drawRoute(routeData, waypoints);
+    calcTiming();
+  });
+}
+
+function mapFullDay() {
+  var classes = SCHEDULE[currentDay];
+  if (!classes.length) return;
+
+  activeRoute = 'fullday';
+  activeClassIdx = null;
+  renderClasses();
+  updateExportButtons();
+
+  var waypoints = classes.map(function(c) {
+    var b = BUILDINGS[c.location];
+    return { lat: b.lat, lng: b.lng, name: c.location + ' (' + c.name + ')' };
+  });
+
+  // Remove consecutive duplicates
+  var deduped = [waypoints[0]];
+  for (var i = 1; i < waypoints.length; i++) {
+    if (waypoints[i].lat !== waypoints[i-1].lat || waypoints[i].lng !== waypoints[i-1].lng) {
+      deduped.push(waypoints[i]);
+    }
+  }
+
+  if (deduped.length < 2) {
+    // Only one unique location
+    clearRoute();
+    clearMarkers();
+    var m = L.marker([deduped[0].lat, deduped[0].lng], { icon: makeNumberIcon(1, '#c5050c') })
+      .addTo(map)
+      .bindPopup('<strong>' + deduped[0].name + '</strong>');
+    markerLayers.push(m);
+    map.setView([deduped[0].lat, deduped[0].lng], 16);
+    hideRouteInfo();
+    return;
+  }
+
+  fetchRoute(deduped, function(routeData) {
+    drawRoute(routeData, deduped);
+    calcTiming();
+  });
+}
+
+// ══════════════════════════════════════════════
+// TIMING CONTROLS
+// ══════════════════════════════════════════════
+function calcTiming() {
+  if (!routeDurMin) return;
+  var leaveInput = document.getElementById('leave-at');
+  var routeInfo = document.getElementById('route-info');
+
+  var distStr = routeDistKm < 1 ? Math.round(routeDistKm * 1000) + ' m' : routeDistKm.toFixed(1) + ' km';
+  var durStr = Math.round(routeDurMin) + ' min';
+  var modeLabel = document.getElementById('travel-mode').value === 'bike' ? 'bike time' : document.getElementById('travel-mode').value === 'car' ? 'drive time' : 'walk time';
+
+  document.getElementById('ri-dist').textContent = distStr;
+  document.getElementById('ri-time').textContent = durStr;
+  document.getElementById('ri-time').nextElementSibling.textContent = modeLabel;
+
+  if (leaveInput.value) {
+    var parts = leaveInput.value.split(':');
+    var leaveMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    var arrMin = leaveMin + Math.round(routeDurMin);
+    var arrH = Math.floor(arrMin / 60) % 24;
+    var arrM = arrMin % 60;
+    document.getElementById('ri-eta').textContent = fmtTime(arrH, arrM);
+    document.getElementById('ri-leave').textContent = fmtTime(parseInt(parts[0]), parseInt(parts[1]));
+  } else if (activeClassIdx !== null) {
+    // Auto-calculate: class start time as arrive-by
+    var c = SCHEDULE[currentDay][activeClassIdx];
+    var arrByMin = c.startH * 60 + c.startM;
+    var leaveByMin = arrByMin - Math.round(routeDurMin);
+    if (leaveByMin < 0) leaveByMin += 24 * 60;
+    var lH = Math.floor(leaveByMin / 60);
+    var lM = leaveByMin % 60;
+    document.getElementById('ri-eta').textContent = fmtTime(c.startH, c.startM);
+    document.getElementById('ri-leave').textContent = fmtTime(lH, lM);
+  } else {
+    document.getElementById('ri-eta').textContent = '–';
+    document.getElementById('ri-leave').textContent = '–';
+  }
+}
+
+function calcArriveBy() {
+  if (!routeDurMin) return;
+  var arriveInput = document.getElementById('arrive-by');
+  if (!arriveInput.value) return;
+
+  var parts = arriveInput.value.split(':');
+  var arrMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  var leaveMin = arrMin - Math.round(routeDurMin);
+  if (leaveMin < 0) leaveMin += 24 * 60;
+  var lH = Math.floor(leaveMin / 60);
+  var lM = leaveMin % 60;
+
+  document.getElementById('leave-at').value = pad2(lH) + ':' + pad2(lM);
+  document.getElementById('ri-eta').textContent = fmtTime(parseInt(parts[0]), parseInt(parts[1]));
+  document.getElementById('ri-leave').textContent = fmtTime(lH, lM);
+}
+
+function fmtTime(h, m) {
+  var ampm = h < 12 ? 'AM' : 'PM';
+  var h12 = h % 12 || 12;
+  return h12 + ':' + pad2(m) + ' ' + ampm;
+}
+
+function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+function showRouteInfo() {
+  document.getElementById('route-info').classList.add('show');
+  calcTiming();
+}
+function hideRouteInfo() {
+  document.getElementById('route-info').classList.remove('show');
+}
+
+function refreshRoute() {
+  if (activeRoute === 'fullday') {
+    mapFullDay();
+  } else if (activeRoute && activeRoute.startsWith('single-')) {
+    var idx = parseInt(activeRoute.split('-')[1]);
+    mapToClass(idx);
+  }
+}
+
+// ══════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════
+function updateExportButtons() {
+  var gBtn = document.getElementById('btn-google');
+  var aBtn = document.getElementById('btn-apple');
+  if (activeRoute) {
+    gBtn.className = 'export-btn google enabled';
+    aBtn.className = 'export-btn apple enabled';
+  } else {
+    gBtn.className = 'export-btn google disabled';
+    aBtn.className = 'export-btn apple disabled';
+  }
+}
+
+function exportGoogle() {
+  if (!activeRoute || !routeWaypoints.length) return;
+  var origin = routeWaypoints[0].lat + ',' + routeWaypoints[0].lng;
+  var dest = routeWaypoints[routeWaypoints.length - 1].lat + ',' + routeWaypoints[routeWaypoints.length - 1].lng;
+  var url = 'https://www.google.com/maps/dir/' + origin + '/' + dest;
+  if (routeWaypoints.length > 2) {
+    var mid = routeWaypoints.slice(1, -1).map(function(w) { return w.lat + ',' + w.lng; }).join('/');
+    url = 'https://www.google.com/maps/dir/' + origin + '/' + mid + '/' + dest;
+  }
+  url += '/@' + routeWaypoints[0].lat + ',' + routeWaypoints[0].lng + ',15z/data=!4m2!4m1!3e2';
+  window.open(url, '_blank');
+}
+
+function exportApple() {
+  if (!activeRoute || !routeWaypoints.length) return;
+  var origin = routeWaypoints[0].lat + ',' + routeWaypoints[0].lng;
+  var dest = routeWaypoints[routeWaypoints.length - 1].lat + ',' + routeWaypoints[routeWaypoints.length - 1].lng;
+  var url = 'https://maps.apple.com/?saddr=' + origin + '&daddr=' + dest + '&dirflg=w';
+  window.open(url, '_blank');
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+renderDayTabs();
+renderClasses();
+showAllMarkers();
+updateExportButtons();
+</script>
+</body>
+</html>
