@@ -17,7 +17,7 @@
 }
 body{font-family:'DM Sans',sans-serif;background:#f8f9fb;color:var(--dark);min-height:100vh}
 
-/* HEADER */
+/* HEADER — matches Figma red bar with logo + search */
 header{background:var(--red);padding:0 40px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(197,5,12,0.35)}
 .logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:.3px}
 .logo em{font-style:normal;opacity:.65;font-weight:600;font-size:15px;margin-left:6px}
@@ -79,51 +79,55 @@ header nav a:hover{color:#fff}
 .sa-clear{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--gray);font-size:18px;line-height:1;padding:0 4px;transition:color .2s}
 .sa-clear:hover{color:var(--red)}
 
-/* ===== CALENDAR ===== */
-.cal-header{background:var(--dark);color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+/* ===== CALENDAR (Figma Starfish style — red header, fully-filled cells) ===== */
+.cal-header{background:var(--red);color:#fff;padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
 .cal-header h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:.5px}
 .cal-nav{display:flex;gap:8px}
-.cal-btn{background:rgba(255,255,255,.12);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.cal-btn:hover{background:rgba(255,255,255,.25)}
+.cal-btn{background:rgba(255,255,255,.18);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.cal-btn:hover{background:rgba(255,255,255,.35)}
 
 .cal-body{padding:20px 24px 24px}
 .day-labels{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px}
-.day-labels span{text-align:center;font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;padding:4px 0}
+.day-labels span{text-align:center;font-size:12px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.5px;padding:6px 0}
 
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.cal-cell{border-radius:10px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:72px;position:relative;transition:transform .15s,box-shadow .15s}
-.cal-cell .day-num{font-size:13px;font-weight:600;line-height:1}
-.cal-cell .day-block{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;transition:all .2s}
-.cal-cell .hol-label{font-size:8.5px;font-weight:600;color:var(--red);text-align:center;line-height:1.2;max-width:52px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 
-/* Past / other month */
-.cal-cell.past{background:#f5f5f5;cursor:default}
-.cal-cell.past .day-num{color:#bbb}
-.cal-cell.past .day-block{background:#e0e0e0;color:#aaa}
+/* FULLY-FILLED calendar cells — entire cell gets the status color */
+.cal-cell{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70px;position:relative;transition:transform .15s,box-shadow .15s;gap:2px}
+.cal-cell .day-num{font-size:14px;font-weight:700;line-height:1.2}
+.cal-cell .day-icon{font-size:20px;font-weight:700;line-height:1}
+.cal-cell .hol-label{font-size:8px;font-weight:600;text-align:center;line-height:1.1;max-width:56px;position:absolute;bottom:3px}
 
-/* Unavailable */
-.cal-cell.unavail{background:#fff5f5;cursor:not-allowed}
-.cal-cell.unavail .day-num{color:var(--gray-dark)}
-.cal-cell.unavail .day-block{background:var(--red);color:#fff}
+/* Past / other month — gray fill */
+.cal-cell.past{background:#e5e7eb;cursor:default}
+.cal-cell.past .day-num{color:#9ca3af}
+.cal-cell.past .day-icon{color:#9ca3af}
 
-/* Available */
-.cal-cell.avail{background:var(--green-light);cursor:pointer}
-.cal-cell.avail .day-num{color:var(--dark)}
-.cal-cell.avail .day-block{background:var(--green);color:#fff}
-.cal-cell.avail:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(30,184,90,.3)}
+/* Unavailable — full RED fill */
+.cal-cell.unavail{background:var(--red);cursor:not-allowed}
+.cal-cell.unavail .day-num{color:#fff}
+.cal-cell.unavail .day-icon{color:#fff}
 
-/* Today */
-.cal-cell.today{background:#fff8f0}
-.cal-cell.today .day-block{background:#fff;border:2.5px solid var(--red);color:var(--red)}
+/* Available — full GREEN fill */
+.cal-cell.avail{background:var(--green);cursor:pointer}
+.cal-cell.avail .day-num{color:#fff}
+.cal-cell.avail .day-icon{color:#fff}
+.cal-cell.avail:hover{transform:scale(1.07);box-shadow:0 4px 18px rgba(30,184,90,.4)}
 
-/* Selected */
-.cal-cell.sel{box-shadow:0 0 0 2.5px #0066cc!important;background:#e8f2fd!important}
-.cal-cell.sel .day-block{background:#0066cc!important;color:#fff!important;border:none!important}
+/* Today — white with red outline */
+.cal-cell.today{background:#fff;border:2.5px solid var(--red);cursor:default}
+.cal-cell.today .day-num{color:var(--red);font-weight:700}
+.cal-cell.today .day-icon{color:var(--red)}
+
+/* Selected — blue highlight */
+.cal-cell.sel{box-shadow:0 0 0 3px #0066cc!important;background:#0066cc!important;transform:scale(1.07)}
+.cal-cell.sel .day-num{color:#fff!important}
+.cal-cell.sel .day-icon{color:#fff!important}
 
 /* Legend */
-.cal-legend{display:flex;flex-wrap:wrap;gap:16px;padding:14px 24px;border-top:1px solid var(--border);background:#fafafa}
-.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-dark)}
-.leg-box{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.cal-legend{display:flex;flex-wrap:wrap;gap:18px;padding:14px 24px;border-top:1px solid var(--border);background:#fafafa}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;color:var(--gray-dark)}
+.leg-box{width:16px;height:16px;border-radius:4px;flex-shrink:0}
 
 /* ===== TIME SLOTS ===== */
 .time-page-header{margin-bottom:20px}
@@ -142,7 +146,8 @@ header nav a:hover{color:#fff}
 .slot:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(197,5,12,.1)}
 .slot.sel{border-color:var(--red);background:var(--red-light)}
 .slot .s-time{font-size:17px;font-weight:700;color:var(--dark)}
-.slot .s-dur{font-size:12px;color:var(--gray-dark);margin-top:4px}
+.slot .s-range{font-size:13px;color:var(--gray-dark);margin-top:2px;font-weight:500}
+.slot .s-dur{font-size:12px;color:var(--gray-dark);margin-top:6px}
 .slot .s-spots{font-size:11px;font-weight:600;color:var(--green);margin-top:8px}
 .slot.full{opacity:.5;cursor:not-allowed;background:var(--gray-light)}
 .slot.full .s-spots{color:var(--gray)}
@@ -177,6 +182,8 @@ header nav a:hover{color:#fff}
 .btn-secondary:hover{border-color:var(--dark)}
 .btn-success{background:var(--green);color:#fff}
 .btn-success:hover{background:#16a449}
+.btn-cancel{background:#fff;color:var(--red);border:2px solid var(--red)}
+.btn-cancel:hover{background:var(--red-light)}
 .btn-cal{background:#fff;color:#0066cc;border:2px solid #0066cc}
 .btn-cal:hover{background:#e8f2fd}
 
@@ -213,30 +220,30 @@ header nav a:hover{color:#fff}
 
     <!-- Advisor Search -->
     <div class="advisor-section">
-      <h2>Who do you need advising for?</h2>
+      <h2>Who do you need advising from?</h2>
       <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input id="advisor-search" type="text" placeholder="Search by department or advisor name (e.g. Computer Science, Housing…)" autocomplete="off"/>
+        <span class="search-icon">&#128269;</span>
+        <input id="advisor-search" type="text" placeholder="Search by department or advisor name (e.g. Computer Science, Housing...)" autocomplete="off"/>
         <div class="dropdown" id="advisor-dropdown"></div>
       </div>
       <div class="selected-advisor" id="selected-chip">
         <div class="advisor-avatar" id="chip-avatar">?</div>
         <div><strong id="chip-name">–</strong><span id="chip-dept">–</span></div>
-        <button class="sa-clear" onclick="clearAdvisor()" title="Change advisor">✕</button>
+        <button class="sa-clear" onclick="clearAdvisor()" title="Change advisor">&#10005;</button>
       </div>
     </div>
 
     <!-- Calendar -->
     <div class="card" id="cal-card">
       <div id="cal-placeholder" class="no-advisor-msg">
-        <div class="icon">📅</div>
+        <div class="icon">&#128197;</div>
         <p>Select an advisor above to view their available dates</p>
       </div>
       <div id="cal-content" style="display:none">
         <div class="cal-header">
-          <div class="cal-nav"><button class="cal-btn" onclick="prevMonth()">‹</button></div>
+          <div class="cal-nav"><button class="cal-btn" onclick="prevMonth()">&#8249;</button></div>
           <h2 id="cal-title">MARCH 2026</h2>
-          <div class="cal-nav"><button class="cal-btn" onclick="nextMonth()">›</button></div>
+          <div class="cal-nav"><button class="cal-btn" onclick="nextMonth()">&#8250;</button></div>
         </div>
         <div class="cal-body">
           <div class="day-labels">
@@ -247,22 +254,22 @@ header nav a:hover{color:#fff}
         <div class="cal-legend">
           <div class="leg-item"><div class="leg-box" style="background:var(--green)"></div>Available</div>
           <div class="leg-item"><div class="leg-box" style="background:var(--red)"></div>Unavailable</div>
-          <div class="leg-item"><div class="leg-box" style="background:#e0e0e0"></div>Past / Other Month</div>
-          <div class="leg-item"><div class="leg-box" style="background:#fff;border:2px solid var(--red)"></div>Today</div>
+          <div class="leg-item"><div class="leg-box" style="background:#e5e7eb"></div>Past / Other Month</div>
+          <div class="leg-item"><div class="leg-box" style="background:#fff;border:2.5px solid var(--red)"></div>Today</div>
         </div>
       </div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="window.history.back()">← Back to MyUW</button>
-      <button class="btn btn-primary" id="btn1" disabled onclick="goPage(2)">Select Time →</button>
+      <button class="btn btn-secondary" onclick="goHome()">&#8592; Back to MyUW</button>
+      <button class="btn btn-primary" id="btn1" disabled onclick="goPage(2)">Select Time &#8594;</button>
     </div>
   </div>
 
   <!-- ══ PAGE 2: TIME SLOTS ══ -->
   <div class="page" id="page2">
     <div class="time-page-header">
-      <h2 id="time-heading">Available Times</h2>
+      <h2 id="time-heading">Available Appointments</h2>
       <p id="time-sub">Select a time slot for your appointment</p>
     </div>
 
@@ -292,8 +299,8 @@ header nav a:hover{color:#fff}
     <div class="slots-grid" id="slots-grid"></div>
 
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="goPage(1)">← Change Date</button>
-      <button class="btn btn-primary" id="btn2" disabled onclick="goPage(3)">Confirm Booking →</button>
+      <button class="btn btn-secondary" onclick="goPage(1)">&#8592; Back to Calendar</button>
+      <button class="btn btn-primary" id="btn2" disabled onclick="goPage(3)">Confirm Booking &#8594;</button>
     </div>
   </div>
 
@@ -301,7 +308,7 @@ header nav a:hover{color:#fff}
   <div class="page" id="page3">
     <div class="card">
       <div class="confirm-top">
-        <div class="check-ring">✓</div>
+        <div class="check-ring">&#10003;</div>
         <h2>Appointment Confirmed!</h2>
         <p>A confirmation email has been sent to your wisc.edu address</p>
       </div>
@@ -313,16 +320,16 @@ header nav a:hover{color:#fff}
           <tr><td>Time</td><td id="c-time">–</td></tr>
           <tr><td>Duration</td><td>30 minutes</td></tr>
           <tr><td>Location</td><td id="c-loc">–</td></tr>
-          <tr><td>Status</td><td><span class="status-badge">✓ Confirmed</span></td></tr>
+          <tr><td>Status</td><td><span class="status-badge">&#10003; Confirmed</span></td></tr>
         </table>
         <div class="ref-box">
           <small>Confirmation Number</small>
           <div class="ref-num" id="c-ref">–</div>
         </div>
         <div class="btn-row" style="margin-top:0;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-secondary" onclick="goHome()">🏠 Return to MyUW</button>
-          <button class="btn btn-secondary" onclick="cancelAppt()">✕ Cancel Appointment</button>
-          <button class="btn btn-cal" onclick="addToCalendar()">📅 Add to Calendar</button>
+          <button class="btn btn-secondary" onclick="goHome()">&#127968; Return to MyUW</button>
+          <button class="btn btn-cancel" onclick="cancelAppt()">&#10005; Cancel Appointment</button>
+          <button class="btn btn-cal" onclick="addToCalendar()">&#128197; Add to Calendar</button>
         </div>
       </div>
     </div>
@@ -340,14 +347,14 @@ const ADVISORS = [
   {
     id:1, name:'Dr. Sarah Chen', dept:'Computer Science', avatar:'SC',
     location:'CS Building, Room 1240', zoom:'zoom.us/j/cs-advising',
-    schedule:{ // month key "YYYY-M" → available day numbers
+    schedule:{
       '2026-2':[5,6,10,12,13,17,19,20,24,26,27],
       '2026-3':[2,3,7,9,10,14,16]
     }
   },
   {
     id:2, name:'Prof. James Miller', dept:'Computer Science', avatar:'JM',
-    location:'CS Building, Room 1310',  zoom:'zoom.us/j/miller-advising',
+    location:'CS Building, Room 1310', zoom:'zoom.us/j/miller-advising',
     schedule:{
       '2026-2':[3,4,6,11,13,18,20,25,27],
       '2026-3':[1,4,5,8,11,15]
@@ -451,8 +458,8 @@ const HOLIDAYS = {'2026-2-17':"St. Patrick's Day"};
 // STATE
 // ══════════════════════════════════════════════
 let selAdvisor = null;
-let selDate = null;   // {year, month, day}
-let selTime = null;   // label string
+let selDate = null;
+let selSlot = null;   // full slot object {h, m, label, spots, endLabel}
 let curYear = 2026, curMonth = 2;
 
 // ══════════════════════════════════════════════
@@ -462,8 +469,7 @@ const searchEl = document.getElementById('advisor-search');
 const dropdownEl = document.getElementById('advisor-dropdown');
 
 searchEl.addEventListener('input', () => {
-  const q = searchEl.value.toLowerCase().trim();
-  renderDropdown(q);
+  renderDropdown(searchEl.value.toLowerCase().trim());
 });
 searchEl.addEventListener('focus', () => {
   renderDropdown(searchEl.value.toLowerCase().trim());
@@ -476,23 +482,27 @@ function renderDropdown(q) {
   const filtered = ADVISORS.filter(a =>
     !q || a.name.toLowerCase().includes(q) || a.dept.toLowerCase().includes(q)
   );
-  if (!filtered.length) { dropdownEl.innerHTML='<div style="padding:14px 16px;color:var(--gray);font-size:14px">No advisors found</div>'; dropdownEl.classList.add('open'); return; }
+  if (!filtered.length) {
+    dropdownEl.innerHTML = '<div style="padding:14px 16px;color:var(--gray);font-size:14px">No advisors found</div>';
+    dropdownEl.classList.add('open');
+    return;
+  }
 
   const byDept = {};
   DEPT_ORDER.forEach(d => byDept[d] = []);
-  filtered.forEach(a => { if(byDept[a.dept]) byDept[a.dept].push(a); });
+  filtered.forEach(a => { if (byDept[a.dept]) byDept[a.dept].push(a); });
 
   let html = '';
   DEPT_ORDER.forEach(dept => {
     const group = byDept[dept];
     if (!group.length) return;
-    html += `<div class="dept-header">${dept}</div>`;
+    html += '<div class="dept-header">' + dept + '</div>';
     group.forEach(a => {
-      html += `<div class="advisor-option${selAdvisor?.id===a.id?' selected':''}" onclick="selectAdvisor(${a.id})">
-        <div class="advisor-avatar" style="background:${avatarColor(a.dept)}">${a.avatar}</div>
-        <div class="advisor-info"><strong>${a.name}</strong><span>${a.dept}</span></div>
-        <span class="advisor-badge">${a.dept}</span>
-      </div>`;
+      html += '<div class="advisor-option' + (selAdvisor && selAdvisor.id === a.id ? ' selected' : '') + '" onclick="selectAdvisor(' + a.id + ')">' +
+        '<div class="advisor-avatar" style="background:' + avatarColor(a.dept) + '">' + a.avatar + '</div>' +
+        '<div class="advisor-info"><strong>' + a.name + '</strong><span>' + a.dept + '</span></div>' +
+        '<span class="advisor-badge">' + a.dept + '</span>' +
+      '</div>';
     });
   });
   dropdownEl.innerHTML = html;
@@ -500,7 +510,15 @@ function renderDropdown(q) {
 }
 
 function avatarColor(dept) {
-  const map = {'Computer Science':'#c5050c','Data Science':'#1e40af','Housing & Residential Life':'#065f46','Mathematics':'#7c3aed','Biology':'#0f766e','Financial Aid':'#b45309','Career Services':'#be185d'};
+  var map = {
+    'Computer Science':'#c5050c',
+    'Data Science':'#1e40af',
+    'Housing & Residential Life':'#065f46',
+    'Mathematics':'#7c3aed',
+    'Biology':'#0f766e',
+    'Financial Aid':'#b45309',
+    'Career Services':'#be185d'
+  };
   return map[dept] || '#374151';
 }
 
@@ -509,14 +527,12 @@ function selectAdvisor(id) {
   searchEl.value = '';
   dropdownEl.classList.remove('open');
 
-  // Show chip
   document.getElementById('chip-avatar').textContent = selAdvisor.avatar;
   document.getElementById('chip-avatar').style.background = avatarColor(selAdvisor.dept);
   document.getElementById('chip-name').textContent = selAdvisor.name;
   document.getElementById('chip-dept').textContent = selAdvisor.dept;
   document.getElementById('selected-chip').classList.add('show');
 
-  // Show calendar
   document.getElementById('cal-placeholder').style.display = 'none';
   document.getElementById('cal-content').style.display = 'block';
 
@@ -526,7 +542,8 @@ function selectAdvisor(id) {
 }
 
 function clearAdvisor() {
-  selAdvisor = null; selDate = null;
+  selAdvisor = null;
+  selDate = null;
   document.getElementById('selected-chip').classList.remove('show');
   document.getElementById('cal-placeholder').style.display = 'block';
   document.getElementById('cal-content').style.display = 'none';
@@ -534,115 +551,139 @@ function clearAdvisor() {
 }
 
 // ══════════════════════════════════════════════
-// CALENDAR
+// CALENDAR — fully filled cells matching Figma Starfish design
 // ══════════════════════════════════════════════
 function renderCalendar() {
   if (!selAdvisor) return;
-  const key = `${curYear}-${curMonth}`;
-  const avail = selAdvisor.schedule[key] || [];
-  const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
-  const firstDow = new Date(curYear, curMonth, 1).getDay();
-  const prevDays = new Date(curYear, curMonth, 0).getDate();
+  var key = curYear + '-' + curMonth;
+  var avail = selAdvisor.schedule[key] || [];
+  var daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
+  var firstDow = new Date(curYear, curMonth, 1).getDay();
+  var prevDays = new Date(curYear, curMonth, 0).getDate();
 
-  document.getElementById('cal-title').textContent = `${MONTH_NAMES[curMonth].toUpperCase()} ${curYear}`;
-  const grid = document.getElementById('cal-grid');
+  document.getElementById('cal-title').textContent = MONTH_NAMES[curMonth].toUpperCase() + ' ' + curYear;
+  var grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
 
   // Leading cells (prev month)
-  for (let i = 0; i < firstDow; i++) {
-    const d = prevDays - firstDow + i + 1;
-    grid.appendChild(makeCell(d, 'past', '–'));
+  for (var i = 0; i < firstDow; i++) {
+    var d = prevDays - firstDow + i + 1;
+    grid.appendChild(makeCell(d, 'past', ''));
   }
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const cellDate = new Date(curYear, curMonth, d);
-    const isPast = cellDate < new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
-    const isToday = cellDate.toDateString() === TODAY.toDateString();
-    const isAvail = avail.includes(d);
-    const holKey = `${curYear}-${curMonth}-${d}`;
-    const holiday = HOLIDAYS[holKey];
-    const dow = (firstDow + d - 1) % 7;
-    const isWeekend = dow === 0 || dow === 6;
+  for (var d = 1; d <= daysInMonth; d++) {
+    var cellDate = new Date(curYear, curMonth, d);
+    var isPast = cellDate < new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+    var isToday = cellDate.toDateString() === TODAY.toDateString();
+    var isAvail = avail.includes(d);
+    var holKey = curYear + '-' + curMonth + '-' + d;
+    var holiday = HOLIDAYS[holKey];
+    var dow = (firstDow + d - 1) % 7;
+    var isWeekend = dow === 0 || dow === 6;
 
-    let cls, icon;
-    if (isPast)         { cls='past';    icon='–'; }
-    else if (isToday)   { cls='today';   icon=d; }
-    else if (isAvail)   { cls='avail';   icon='✓'; }
-    else                { cls='unavail'; icon='✕'; }
-    if (isWeekend && !isAvail && !isToday) { cls='past'; icon='–'; }
+    var cls, icon;
+    if (isPast)           { cls = 'past';    icon = ''; }
+    else if (isToday)     { cls = 'today';   icon = ''; }
+    else if (isAvail)     { cls = 'avail';   icon = '\u2713'; }
+    else                  { cls = 'unavail'; icon = '\u2715'; }
+    if (isWeekend && !isAvail && !isToday) { cls = 'past'; icon = ''; }
 
-    const cell = makeCell(d, cls, icon, holiday);
+    var cell = makeCell(d, cls, icon, holiday);
     if (cls === 'avail') {
-      cell.addEventListener('click', () => {
-        document.querySelectorAll('.cal-cell').forEach(c=>c.classList.remove('sel'));
-        cell.classList.add('sel');
-        cell.querySelector('.day-block').textContent = '✓';
-        selDate = {year:curYear, month:curMonth, day:d};
-        document.getElementById('btn1').disabled = false;
-      });
+      (function(cell, day) {
+        cell.addEventListener('click', function() {
+          var cells = document.querySelectorAll('.cal-cell');
+          for (var j = 0; j < cells.length; j++) cells[j].classList.remove('sel');
+          cell.classList.add('sel');
+          selDate = { year: curYear, month: curMonth, day: day };
+          document.getElementById('btn1').disabled = false;
+        });
+      })(cell, d);
     }
     grid.appendChild(cell);
   }
 
   // Trailing cells
-  const total = firstDow + daysInMonth;
-  const trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
-  for (let i = 1; i <= trailing; i++) grid.appendChild(makeCell(i,'past','–'));
+  var total = firstDow + daysInMonth;
+  var trailing = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (var i = 1; i <= trailing; i++) grid.appendChild(makeCell(i, 'past', ''));
 }
 
 function makeCell(num, cls, icon, holiday) {
-  const el = document.createElement('div');
-  el.className = `cal-cell ${cls}`;
-  el.innerHTML = `<div class="day-num">${num}</div><div class="day-block">${icon}</div>${holiday?`<div class="hol-label">${holiday}</div>`:''}`;
+  var el = document.createElement('div');
+  el.className = 'cal-cell ' + cls;
+  el.innerHTML = '<div class="day-num">' + num + '</div>' +
+    (icon ? '<div class="day-icon">' + icon + '</div>' : '') +
+    (holiday ? '<div class="hol-label">' + holiday + '</div>' : '');
   return el;
 }
 
 function prevMonth() {
-  curMonth--; if(curMonth<0){curMonth=11;curYear--;}
-  selDate=null; document.getElementById('btn1').disabled=true;
+  curMonth--;
+  if (curMonth < 0) { curMonth = 11; curYear--; }
+  selDate = null;
+  document.getElementById('btn1').disabled = true;
   renderCalendar();
 }
 function nextMonth() {
-  curMonth++; if(curMonth>11){curMonth=0;curYear++;}
-  selDate=null; document.getElementById('btn1').disabled=true;
+  curMonth++;
+  if (curMonth > 11) { curMonth = 0; curYear++; }
+  selDate = null;
+  document.getElementById('btn1').disabled = true;
   renderCalendar();
 }
 
 // ══════════════════════════════════════════════
-// TIME SLOTS
+// TIME SLOTS — now showing 30-min ranges
 // ══════════════════════════════════════════════
-function renderTimes() {
-  const fromH = parseInt(document.getElementById('from-time').value);
-  const toH   = parseInt(document.getElementById('to-time').value);
-  const dn = `${MONTH_NAMES[selDate.month]} ${selDate.day}, ${selDate.year}`;
-  document.getElementById('time-heading').textContent = `Available Times – ${dn}`;
-  document.getElementById('time-sub').textContent = `Showing slots from ${fmtH(fromH)} to ${fmtH(toH)} for ${selAdvisor.name}`;
+function slotEndLabel(s) {
+  var endM = s.m + 30;
+  var endH = s.h;
+  if (endM >= 60) { endM -= 60; endH++; }
+  var ampm = endH < 12 ? 'AM' : 'PM';
+  var h12 = endH % 12 || 12;
+  return h12 + ':' + (endM < 10 ? '0' : '') + endM + ' ' + ampm;
+}
 
-  const slots = TIME_SLOTS_BASE.filter(s => s.h >= fromH && s.h < toH);
-  const grid = document.getElementById('slots-grid');
+function renderTimes() {
+  var fromH = parseInt(document.getElementById('from-time').value);
+  var toH = parseInt(document.getElementById('to-time').value);
+  var dn = MONTH_NAMES[selDate.month] + ' ' + selDate.day + ', ' + selDate.year;
+  document.getElementById('time-heading').textContent = 'Available Appointments \u2013 ' + dn;
+  document.getElementById('time-sub').textContent = 'Showing slots for ' + selAdvisor.name + ' (' + selAdvisor.dept + ')';
+
+  var slots = TIME_SLOTS_BASE.filter(function(s) { return s.h >= fromH && s.h < toH; });
+  var grid = document.getElementById('slots-grid');
   grid.innerHTML = '';
-  selTime = null;
+  selSlot = null;
   document.getElementById('btn2').disabled = true;
 
-  document.getElementById('range-note').textContent = `${slots.length} slots shown`;
+  document.getElementById('range-note').textContent = slots.length + ' slots shown';
 
   if (!slots.length) {
     grid.innerHTML = '<div class="no-slots" style="grid-column:1/-1">No slots in this range. Try adjusting the time filter.</div>';
     return;
   }
 
-  slots.forEach(s => {
-    const full = s.spots === 0;
-    const el = document.createElement('div');
-    el.className = `slot${full?' full':''}`;
-    el.innerHTML = `<div class="s-time">${s.label}</div><div class="s-dur">30 min · Academic Advising</div><div class="s-spots">${full?'No spots left':`${s.spots} spot${s.spots!==1?'s':''} left`}</div>`;
+  slots.forEach(function(s) {
+    var full = s.spots === 0;
+    var endLbl = slotEndLabel(s);
+    var el = document.createElement('div');
+    el.className = 'slot' + (full ? ' full' : '');
+    el.innerHTML = '<div class="s-time">' + s.label + '</div>' +
+      '<div class="s-range">' + s.label + ' \u2013 ' + endLbl + '</div>' +
+      '<div class="s-dur">30 min \u00B7 Academic Advising</div>' +
+      '<div class="s-spots">' + (full ? 'No spots left' : s.spots + ' spot' + (s.spots !== 1 ? 's' : '') + ' left') + '</div>';
     if (!full) {
-      el.addEventListener('click', () => {
-        document.querySelectorAll('.slot').forEach(x=>x.classList.remove('sel'));
-        el.classList.add('sel');
-        selTime = s.label;
-        document.getElementById('btn2').disabled = false;
-      });
+      (function(el, s, endLbl) {
+        el.addEventListener('click', function() {
+          var allSlots = document.querySelectorAll('.slot');
+          for (var j = 0; j < allSlots.length; j++) allSlots[j].classList.remove('sel');
+          el.classList.add('sel');
+          selSlot = { h: s.h, m: s.m, label: s.label, endLabel: endLbl, spots: s.spots };
+          document.getElementById('btn2').disabled = false;
+        });
+      })(el, s, endLbl);
     }
     grid.appendChild(el);
   });
@@ -651,69 +692,80 @@ function renderTimes() {
 function filterSlots() { renderTimes(); }
 
 function fmtH(h) {
-  const ampm = h < 12 ? 'AM' : 'PM';
-  const h12 = h % 12 || 12;
-  return `${h12}:00 ${ampm}`;
+  var ampm = h < 12 ? 'AM' : 'PM';
+  var h12 = h % 12 || 12;
+  return h12 + ':00 ' + ampm;
 }
 
 // ══════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════
 function goPage(n) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(`page${n}`).classList.add('active');
+  var pages = document.querySelectorAll('.page');
+  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+  document.getElementById('page' + n).classList.add('active');
   setStep(n);
-  if (n===2) renderTimes();
-  if (n===3) fillConfirm();
-  window.scrollTo({top:0,behavior:'smooth'});
+  if (n === 2) renderTimes();
+  if (n === 3) fillConfirm();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function setStep(n) {
-  [1,2,3].forEach(i => {
-    const s = document.getElementById(`step${i}`);
-    const c = document.getElementById(`sc${i}`);
-    s.classList.remove('active','done');
-    if (i < n)       { s.classList.add('done');   c.innerHTML='✓'; }
-    else if (i===n)  { s.classList.add('active');  c.textContent=i; }
-    else             { c.textContent=i; }
+  [1, 2, 3].forEach(function(i) {
+    var s = document.getElementById('step' + i);
+    var c = document.getElementById('sc' + i);
+    s.classList.remove('active', 'done');
+    if (i < n)        { s.classList.add('done');  c.innerHTML = '\u2713'; }
+    else if (i === n) { s.classList.add('active'); c.textContent = i; }
+    else              { c.textContent = i; }
   });
-  [1,2].forEach(i => {
-    document.getElementById(`conn${i}`).classList.toggle('done', i < n);
+  [1, 2].forEach(function(i) {
+    var el = document.getElementById('conn' + i);
+    if (i < n) el.classList.add('done');
+    else el.classList.remove('done');
   });
 }
 
 function fillConfirm() {
-  const dn = `${MONTH_NAMES[selDate.month]} ${selDate.day}, ${selDate.year}`;
+  var dn = MONTH_NAMES[selDate.month] + ' ' + selDate.day + ', ' + selDate.year;
   document.getElementById('c-advisor').textContent = selAdvisor.name;
   document.getElementById('c-dept').textContent = selAdvisor.dept;
   document.getElementById('c-date').textContent = dn;
-  document.getElementById('c-time').textContent = selTime;
-  document.getElementById('c-loc').innerHTML = `${selAdvisor.location}<br><small style="color:var(--gray-dark);font-weight:400">or via Zoom: ${selAdvisor.zoom}</small>`;
-  document.getElementById('c-ref').textContent = 'UW' + Math.floor(100000 + Math.random()*900000);
+  // Show time as a range: "9:00 AM – 9:30 AM (30 min)"
+  document.getElementById('c-time').textContent = selSlot.label + ' \u2013 ' + selSlot.endLabel;
+  document.getElementById('c-loc').innerHTML = selAdvisor.location + '<br><small style="color:var(--gray-dark);font-weight:400">or via Zoom: ' + selAdvisor.zoom + '</small>';
+  document.getElementById('c-ref').textContent = 'UW' + Math.floor(100000 + Math.random() * 900000);
 }
 
-function goHome() { window.location.href = '#'; /* replace with actual MyUW URL */ }
+function goHome() {
+  window.location.href = 'https://www.figma.com/proto/bpcqPhSPKckikaMYHflw15/High-Fidelity-Prototype?node-id=1-1741&t=ymB48FjNZm0hCbBj-1';
+}
 
 function cancelAppt() {
   if (confirm('Are you sure you want to cancel this appointment?')) {
     alert('Your appointment has been cancelled. You will receive a confirmation email.');
     goPage(1);
     clearAdvisor();
-    selDate = null; selTime = null;
+    selDate = null;
+    selSlot = null;
   }
 }
 
 function addToCalendar() {
-  const title = encodeURIComponent(`Advising Appointment – ${selAdvisor.name}`);
-  const loc   = encodeURIComponent(selAdvisor.location);
-  const d = selDate;
-  const [h, minPart] = selTime.replace(' AM','').replace(' PM','').split(':');
-  let hour = parseInt(h);
-  if (selTime.includes('PM') && hour !== 12) hour += 12;
-  const start = `${d.year}${String(d.month+1).padStart(2,'0')}${String(d.day).padStart(2,'0')}T${String(hour).padStart(2,'0')}${minPart||'00'}00`;
-  const endH = String(hour+0).padStart(2,'0'); // same hour, +30min
-  const end   = `${d.year}${String(d.month+1).padStart(2,'0')}${String(d.day).padStart(2,'0')}T${String(hour).padStart(2,'0')}3000`;
-  window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&location=${loc}`,'_blank');
+  var title = encodeURIComponent('Advising Appointment \u2013 ' + selAdvisor.name);
+  var loc = encodeURIComponent(selAdvisor.location);
+  var d = selDate;
+  var hour = selSlot.h;
+  var min = selSlot.m;
+  var pad2 = function(n) { return n < 10 ? '0' + n : '' + n; };
+  var dateStr = d.year + pad2(d.month + 1) + pad2(d.day);
+  var start = dateStr + 'T' + pad2(hour) + pad2(min) + '00';
+  // End = +30 min
+  var endMin = min + 30;
+  var endHour = hour;
+  if (endMin >= 60) { endMin -= 60; endHour++; }
+  var end = dateStr + 'T' + pad2(endHour) + pad2(endMin) + '00';
+  window.open('https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + title + '&dates=' + start + '/' + end + '&location=' + loc, '_blank');
 }
 </script>
 </body>
